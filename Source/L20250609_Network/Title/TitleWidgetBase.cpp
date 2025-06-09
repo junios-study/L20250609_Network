@@ -4,6 +4,9 @@
 #include "TitleWidgetBase.h"
 #include "Components/EditableTextBox.h"
 #include "Components/Button.h"
+#include "../MyGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "TitlePC.h"
 
 void UTitleWidgetBase::NativeConstruct()
 {
@@ -31,9 +34,32 @@ void UTitleWidgetBase::NativeConstruct()
 void UTitleWidgetBase::OnClickServerStartButton()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnClickServerStartButton"));
+	SaveUserId();
+
+	ATitlePC* PC = Cast<ATitlePC>(GetOwningPlayer());
+	if (PC)
+	{
+		PC->StartServer();
+	}
 }
 
 void UTitleWidgetBase::OnClickConnectButton()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnClickConnectButton"));
+	SaveUserId();
+
+	ATitlePC* PC = Cast<ATitlePC>(GetOwningPlayer());
+	if (PC && ServerIPText)
+	{
+		PC->ConnectClient(ServerIPText->GetText());
+	}
+}
+
+void UTitleWidgetBase::SaveUserId()
+{
+	UMyGameInstance* GI = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (GI && UserIdText)
+	{
+		GI->UserId = UserIdText->GetText().ToString();
+	}
 }

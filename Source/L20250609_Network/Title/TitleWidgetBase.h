@@ -40,4 +40,6 @@ public:
 	UFUNCTION()
 	void OnClickConnectButton();
 
+	void SaveUserId();
+
 };
