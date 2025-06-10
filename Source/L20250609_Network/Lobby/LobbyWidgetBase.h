@@ -18,6 +18,7 @@ UCLASS()
 class L20250609_NETWORK_API ULobbyWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 
 	UPROPERTY(meta=(BindWidgetOptional), VisibleAnywhere, Category="UI", BlueprintReadOnly)

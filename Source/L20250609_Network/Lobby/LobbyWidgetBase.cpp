@@ -9,6 +9,7 @@
 #include "LobbyPC.h"
 #include "Kismet/GameplayStatics.h"
 #include "LobbyGS.h"
+#include "LobbyGM.h"
 
 void ULobbyWidgetBase::NativeConstruct()
 {
@@ -33,7 +34,11 @@ void ULobbyWidgetBase::NativeConstruct()
 
 void ULobbyWidgetBase::Start()
 {
-
+	ALobbyGM* GM = Cast<ALobbyGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		GM->StartGame();
+	}
 }
 
 void ULobbyWidgetBase::EnterChat()
@@ -104,13 +109,6 @@ void ULobbyWidgetBase::AddMessage(const FText& Text)
 void ULobbyWidgetBase::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GS)
-	{
-		FString Temp = FString::Printf(TEXT("%d명 접속"), GS->ConnectCount);
-		ConnectCountText->SetText(FText::FromString(Temp));
-	}
 	
 }
 

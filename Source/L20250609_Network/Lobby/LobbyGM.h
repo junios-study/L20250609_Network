@@ -25,6 +25,15 @@ public:
 
 	void CountConnect();
 
+	virtual void BeginPlay() override;
+
+
+	UFUNCTION()
+	void DecreaseTime();
+
+	void StartGame();
+
+	FTimerHandle LeftTimeHandle;
 
 
 

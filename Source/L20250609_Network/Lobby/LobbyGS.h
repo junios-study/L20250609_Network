@@ -16,11 +16,17 @@ class L20250609_NETWORK_API ALobbyGS : public AGameStateBase
 
 public:
 
-	UPROPERTY(Replicated)
-	uint16 LeftTime = 60;
+	UPROPERTY(ReplicatedUsing = "OnRep_LeftTime")
+	uint16 LeftTime = 10;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_ConnectCount)
 	uint16 ConnectCount = 0;
+	
+	UFUNCTION()
+	void OnRep_LeftTime();
+
+	UFUNCTION()
+	void OnRep_ConnectCount();
 
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
