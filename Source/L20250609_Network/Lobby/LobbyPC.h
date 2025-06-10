@@ -20,4 +20,14 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="UI", BlueprintReadOnly)
 	TObjectPtr<ULobbyWidgetBase> WidgetObject;
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void C2S_SendMessage(const FText& Message); //(call Clinet->Server)
+	bool C2S_SendMessage_Validate(class FText const& Message); //(Server)
+	void C2S_SendMessage_Implementation(class FText const& Message); //(execute server)
+
+	UFUNCTION(Client, Reliable)
+	void S2C_SendMessage(const FText& Message); // (call server)
+	void S2C_SendMessage_Implementation(const FText& Message); //(execute client)
+
+
 };

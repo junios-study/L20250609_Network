@@ -55,4 +55,6 @@ public:
 
 	void ShowStartButton();
 
+	void AddMessage(const FText& Text);
+
 };
