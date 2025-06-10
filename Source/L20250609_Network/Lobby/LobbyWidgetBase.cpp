@@ -7,6 +7,8 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "LobbyPC.h"
+#include "Kismet/GameplayStatics.h"
+#include "LobbyGS.h"
 
 void ULobbyWidgetBase::NativeConstruct()
 {
@@ -97,5 +99,18 @@ void ULobbyWidgetBase::AddMessage(const FText& Text)
 		ChatScroll->AddChild(NewMessage);
 		ChatScroll->ScrollToEnd();
 	}
+}
+
+void ULobbyWidgetBase::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GS)
+	{
+		FString Temp = FString::Printf(TEXT("%d명 접속"), GS->ConnectCount);
+		ConnectCountText->SetText(FText::FromString(Temp));
+	}
+	
 }
 

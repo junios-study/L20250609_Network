@@ -2,6 +2,7 @@
 
 
 #include "LobbyGM.h"
+#include "LobbyGS.h"
 
 void ALobbyGM::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
@@ -24,4 +25,26 @@ void ALobbyGM::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	
 	UE_LOG(LogTemp, Warning, TEXT("PostLogin : %s"), *NewPlayer->GetName());
+
+	CountConnect();
+}
+
+void ALobbyGM::Logout(AController* Exiting)
+{
+	CountConnect();
+}
+
+void ALobbyGM::CountConnect()
+{
+	uint16 ConnectCount = 0;
+	for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
+	{
+		ConnectCount++;
+	}
+
+	ALobbyGS* GS = GetGameState<ALobbyGS>();
+	if (GS)
+	{
+		GS->ConnectCount = ConnectCount;
+	}
 }

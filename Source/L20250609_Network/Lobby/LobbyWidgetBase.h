@@ -57,4 +57,7 @@ public:
 
 	void AddMessage(const FText& Text);
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+
 };
