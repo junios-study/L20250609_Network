@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "LobbyPC.generated.h"
 
+class ULobbyWidgetBase;
 /**
  * 
  */
@@ -13,5 +14,10 @@ UCLASS()
 class L20250609_NETWORK_API ALobbyPC : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, Category="UI", BlueprintReadOnly)
+	TObjectPtr<ULobbyWidgetBase> WidgetObject;
+
 };
