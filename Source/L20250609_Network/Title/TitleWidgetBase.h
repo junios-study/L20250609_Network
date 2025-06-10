@@ -19,7 +19,7 @@ class L20250609_NETWORK_API UTitleWidgetBase : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(VisibleAnywhere, Category="Components",  BlueprintReadOnly)
+	UPROPERTY(meta=(WidgetBinding), VisibleAnywhere, Category="Components",  BlueprintReadOnly)
 	TObjectPtr<UEditableTextBox> UserIdText;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components", BlueprintReadOnly)
@@ -28,7 +28,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components", BlueprintReadOnly)
 	TObjectPtr<UEditableTextBox> ServerIPText;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components", BlueprintReadOnly)
+	UPROPERTY(meta = (WidgetBinding), VisibleAnywhere, Category = "Components", BlueprintReadOnly)
 	TObjectPtr<UButton> StartServerButton;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components", BlueprintReadOnly)
