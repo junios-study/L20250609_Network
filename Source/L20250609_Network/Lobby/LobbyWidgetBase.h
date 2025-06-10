@@ -53,4 +53,6 @@ public:
 	UFUNCTION()
 	void OnCommittedEvent(const FText& Text, ETextCommit::Type CommitMethod);
 
+	void ShowStartButton();
+
 };

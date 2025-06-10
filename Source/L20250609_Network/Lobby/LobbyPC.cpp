@@ -23,6 +23,15 @@ void ALobbyPC::BeginPlay()
 
 			//Listen Server(client), Client 
 			WidgetObject->AddToViewport();
+
+			if (HasAuthority())
+			{
+				WidgetObject->ShowStartButton();
+			}
+
+			bShowMouseCursor = true;
+
+			SetInputMode(FInputModeGameAndUI());
 		}
 	}
 

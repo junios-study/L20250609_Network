@@ -21,5 +21,7 @@ APlayerController* ALobbyGM::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, co
 
 void ALobbyGM::PostLogin(APlayerController* NewPlayer)
 {
+	Super::PostLogin(NewPlayer);
+	
 	UE_LOG(LogTemp, Warning, TEXT("PostLogin : %s"), *NewPlayer->GetName());
 }

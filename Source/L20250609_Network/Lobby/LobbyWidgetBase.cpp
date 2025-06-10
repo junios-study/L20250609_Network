@@ -45,3 +45,11 @@ void ULobbyWidgetBase::OnChangedEvent(const FText& Text)
 void ULobbyWidgetBase::OnCommittedEvent(const FText& Text, ETextCommit::Type CommitMethod)
 {
 }
+
+void ULobbyWidgetBase::ShowStartButton()
+{
+	if (StartButton)
+	{
+		StartButton->SetVisibility(ESlateVisibility::Visible);
+	}
+}
