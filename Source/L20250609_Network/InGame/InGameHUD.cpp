@@ -4,6 +4,7 @@
 #include "InGameHUD.h"
 #include "Engine/Canvas.h"
 #include "GameFramework/Character.h"
+#include "Components/CapsuleComponent.h"
 
 void AInGameHUD::DrawHUD()
 {
@@ -47,5 +48,38 @@ void AInGameHUD::DrawHUD()
 			CenterX,
 			CenterY + (Unit * 2) + (Unit * SpeedRatio),
 			FLinearColor::Red, 2.0f);
+
+
+		if (bShowHeight)
+		{
+			FVector FootStep = Pawn->GetActorLocation();
+			FootStep.Z -= Pawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+			FVector Height = Pawn->GetActorLocation();
+			Height.Z += Pawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+			DrawDebugLine(GetWorld(),
+				FootStep,
+				Height,
+				FColor::Green,
+				false,
+				0.5f
+			);
+
+			DrawDebugCapsule(
+				GetWorld(),
+				Pawn->GetActorLocation(),
+				Pawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+				Pawn->GetCapsuleComponent()->GetScaledCapsuleRadius(),
+				Pawn->GetActorQuat(),
+				FColor::Green
+			);
+		}
 	}
+
+
+}
+
+void AInGameHUD::ShowHeight()
+{
+	bShowHeight = bShowHeight == 1 ? 0 : 1;
 }

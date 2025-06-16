@@ -17,4 +17,9 @@ class L20250609_NETWORK_API AInGameHUD : public AHUD
 public:
 	virtual void DrawHUD() override;
 
+	int8 bShowHeight : 1;
+
+	UFUNCTION(Exec)
+	void ShowHeight();
+
 };
