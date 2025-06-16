@@ -11,6 +11,7 @@
 #include "Engine/DamageEvents.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "InGame/InGamePC.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -164,6 +165,22 @@ void AMyCharacter::C2S_Fire_Implementation(const FVector& SpawnPosition, const F
 	}
 }
 
+void AMyCharacter::S2A_Dead_Implementation(const FVector& ImpulseDirection)
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->AddImpulse(ImpulseDirection * 100000.0f, FName(TEXT("head")));
+
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		PC->DisableInput(PC);
+	}
+}
+
+
+
 float AMyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -177,20 +194,7 @@ float AMyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 
 			if (PointDamageEvent->HitInfo.BoneName.ToString().Compare(TEXT("head")) == 0)
 			{
-				AMyCharacter* DamagePawn = Cast<AMyCharacter>(PointDamageEvent->HitInfo.GetActor());
-				if (DamagePawn)
-				{
-					DamagePawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-					DamagePawn->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-					DamagePawn->GetMesh()->SetSimulatePhysics(true);
-					DamagePawn->GetMesh()->AddImpulse(-PointDamageEvent->HitInfo.ImpactNormal * 100000.0f, FName(TEXT("head")));
-				}
-			}
-
-			APlayerController* PC = Cast<APlayerController>(GetController());
-			if (PC)
-			{
-				PC->DisableInput(PC);
+				S2A_Dead(-PointDamageEvent->HitInfo.ImpactNormal);
 			}
 		}
 	}

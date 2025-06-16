@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input", BlueprintReadWrite)
 	TObjectPtr<UInputAction> FireInput;
 
+
+
+
 	UFUNCTION()
 	void OnFire();
 
@@ -39,6 +42,12 @@ public:
 	void C2S_Fire(const FVector& SpawnPosition, const FRotator& SpawnRotation);
 	bool C2S_Fire_Validate(const FVector& SpawnPosition, const FRotator& SpawnRotation);
 	void C2S_Fire_Implementation(const FVector& SpawnPosition, const FRotator& SpawnRotation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void S2A_Dead(const FVector& ImpulseDirection);
+	void S2A_Dead_Implementation(const FVector& ImpulseDirection);
+
+
 
 	UPROPERTY(EditAnywhere, Category = "Data", BlueprintReadWrite)
 	TSubclassOf<AActor> BulletActor;
