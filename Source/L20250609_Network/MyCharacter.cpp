@@ -3,8 +3,8 @@
 
 #include "MyCharacter.h"
 #include "GameFramework/PlayerController.h"
-//#include "EnhancedInputSystem.h"
-//#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
