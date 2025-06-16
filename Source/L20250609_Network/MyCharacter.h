@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
+class UInputAction;
+
 UCLASS()
 class L20250609_NETWORK_API AMyCharacter : public ACharacter
 {
@@ -26,4 +28,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	UPROPERTY(EditAnywhere, Category = "Input", BlueprintReadWrite)
+	TObjectPtr<UInputAction> FireInput;
+
+	UFUNCTION()
+	void OnFire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void C2S_Fire(const FVector& SpawnPosition, const FRotator& SpawnRotation);
+	bool C2S_Fire_Validate(const FVector& SpawnPosition, const FRotator& SpawnRotation);
+	void C2S_Fire_Implementation(const FVector& SpawnPosition, const FRotator& SpawnRotation);
+
+	UPROPERTY(EditAnywhere, Category = "Data", BlueprintReadWrite)
+	TSubclassOf<AActor> BulletActor;
 };

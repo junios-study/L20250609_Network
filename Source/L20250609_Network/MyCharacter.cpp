@@ -26,6 +26,25 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+
+}
+
+// Called to bind functionality to input
+void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UEnhancedInputComponent* UIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (IsValid(UIC))
+	{
+		UIC->BindAction(FireInput, ETriggerEvent::Completed, this, &AMyCharacter::OnFire);
+	}
+
+}
+
+void AMyCharacter::OnFire()
+{
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	if (IsValid(PC))
 	{
@@ -41,16 +60,22 @@ void AMyCharacter::Tick(float DeltaTime)
 			WorldPosition,
 			WorldDirection
 		);
-			
-	}
 
+		FVector SpawnPosition = GetActorLocation() + (WorldDirection * 100.f);
+		FRotator SpawnRotation = WorldDirection.Rotation();
+		//GetWorld()->SpawnActor<AActor>(BulletActor, SpawnPosition, WorldDirection.Rotation());
+		C2S_Fire(SpawnPosition, SpawnRotation);
+	}
 }
 
-// Called to bind functionality to input
-void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+bool AMyCharacter::C2S_Fire_Validate(const FVector& SpawnPosition, const FRotator& SpawnRotation)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	return true;
+}
 
+void AMyCharacter::C2S_Fire_Implementation(const FVector& SpawnPosition, const FRotator& SpawnRotation)
+{
+	GetWorld()->SpawnActor<AActor>(BulletActor, SpawnPosition, SpawnRotation);
 }
 
 
