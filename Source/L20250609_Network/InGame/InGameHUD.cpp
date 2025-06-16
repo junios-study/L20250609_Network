@@ -81,5 +81,5 @@ void AInGameHUD::DrawHUD()
 
 void AInGameHUD::ShowHeight()
 {
-	bShowHeight = bShowHeight == 1 ? 0 : 1;
+	bShowHeight = !bShowHeight;
 }
