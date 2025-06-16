@@ -5,6 +5,12 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "BulletDamage.h"
+#include "Engine/DamageEvents.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -53,7 +59,11 @@ void AMyCharacter::OnFire()
 		FVector WorldPosition;
 		FVector WorldDirection;
 
+		FVector CameraLocation;
+		FRotator CameraRotation;
+
 		PC->GetViewportSize(SizeX, SizeY);
+		PC->GetPlayerViewPoint(CameraLocation, CameraRotation);
 
 		PC->DeprojectScreenPositionToWorld(SizeX / 2.0f,
 			SizeY / 2.0f,
@@ -61,9 +71,12 @@ void AMyCharacter::OnFire()
 			WorldDirection
 		);
 
-		FVector SpawnPosition = GetActorLocation() + (WorldDirection * 100.f);
-		FRotator SpawnRotation = WorldDirection.Rotation();
-		//GetWorld()->SpawnActor<AActor>(BulletActor, SpawnPosition, WorldDirection.Rotation());
+		//FVector SpawnPosition = GetActorLocation() + (WorldDirection * 100.f);
+		//FRotator SpawnRotation = WorldDirection.Rotation();
+
+		FVector SpawnPosition = CameraLocation;
+		FRotator SpawnRotation = CameraRotation;
+
 		C2S_Fire(SpawnPosition, SpawnRotation);
 	}
 }
@@ -75,7 +88,126 @@ bool AMyCharacter::C2S_Fire_Validate(const FVector& SpawnPosition, const FRotato
 
 void AMyCharacter::C2S_Fire_Implementation(const FVector& SpawnPosition, const FRotator& SpawnRotation)
 {
-	GetWorld()->SpawnActor<AActor>(BulletActor, SpawnPosition, SpawnRotation);
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
+
+	TArray<AActor*> IgnoreActor;
+
+	FHitResult OutHit;
+
+	//AActor* Bullet = GetWorld()->SpawnActor<AActor>(BulletActor, SpawnPosition, SpawnRotation);
+
+	bool bResult = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		SpawnPosition,
+		SpawnPosition + (SpawnRotation.Vector() * 10000.0f),
+		ObjectTypes,
+		true,
+		IgnoreActor,
+		EDrawDebugTrace::ForDuration,
+		OutHit,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		2.0f
+	);
+	if (bResult)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *OutHit.GetActor()->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Bone %s"), *OutHit.BoneName.ToString());
+		
+		//UGameplayStatics::ApplyDamage(OutHit.GetActor(),
+		//	100.0f,
+		//	GetController(),
+		//	this, 
+		//	UBulletDamage::StaticClass()
+		//);
+
+		UGameplayStatics::ApplyPointDamage(
+			OutHit.GetActor(),
+			100.0f,
+			SpawnRotation.Vector(),
+			OutHit,
+			GetController(),
+			this,
+			UBulletDamage::StaticClass()
+		);
+
+		//UGameplayStatics::ApplyRadialDamage(
+		//	GetWorld(),
+		//	100.0f,
+		//	OutHit.ImpactPoint,
+		//	300.0f,
+		//	UBulletDamage::StaticClass(),
+		//	IgnoreActor,
+		//	this,
+		//	GetController()
+		//);
+
+		//UGameplayStatics::ApplyRadialDamageWithFalloff(
+		//	GetWorld(),
+		//	100.0f,
+		//	10.0f,
+		//	OutHit.ImpactPoint,
+		//	300.0f,
+		//	600.0f,
+		//	10.0f,
+		//	UBulletDamage::StaticClass(),
+		//	IgnoreActor,
+		//	this,
+		//	GetController()
+		//);
+	}
 }
+
+float AMyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		FPointDamageEvent* PointDamageEvent = (FPointDamageEvent*)&DamageEvent;
+		if (PointDamageEvent->DamageTypeClass == UBulletDamage::StaticClass())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FPointDamageEvent %f %s"), DamageAmount, *PointDamageEvent->HitInfo.BoneName.ToString());
+
+			if (PointDamageEvent->HitInfo.BoneName.ToString().Compare(TEXT("head")) == 0)
+			{
+				AMyCharacter* DamagePawn = Cast<AMyCharacter>(PointDamageEvent->HitInfo.GetActor());
+				if (DamagePawn)
+				{
+					DamagePawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+					DamagePawn->GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+					DamagePawn->GetMesh()->SetSimulatePhysics(true);
+					DamagePawn->GetMesh()->AddImpulse(-PointDamageEvent->HitInfo.ImpactNormal * 100000.0f, FName(TEXT("head")));
+				}
+			}
+
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			if (PC)
+			{
+				PC->DisableInput(PC);
+			}
+		}
+	}
+	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FRadialDamageEvent %f"), DamageAmount);
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DamageAmount %f"), DamageAmount);
+	}
+
+	
+
+	return 0.0f;
+}
+
+
 
 

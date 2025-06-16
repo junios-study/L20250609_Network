@@ -42,4 +42,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Data", BlueprintReadWrite)
 	TSubclassOf<AActor> BulletActor;
+
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };
