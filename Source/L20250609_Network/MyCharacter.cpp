@@ -181,7 +181,7 @@ float AMyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 				if (DamagePawn)
 				{
 					DamagePawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-					DamagePawn->GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+					DamagePawn->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 					DamagePawn->GetMesh()->SetSimulatePhysics(true);
 					DamagePawn->GetMesh()->AddImpulse(-PointDamageEvent->HitInfo.ImpactNormal * 100000.0f, FName(TEXT("head")));
 				}
