@@ -13,5 +13,8 @@ UCLASS()
 class L20250609_NETWORK_API AInGameHUD : public AHUD
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void DrawHUD() override;
+
 };

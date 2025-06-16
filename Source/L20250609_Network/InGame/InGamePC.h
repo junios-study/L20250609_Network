@@ -13,5 +13,4 @@ UCLASS()
 class L20250609_NETWORK_API AInGamePC : public APlayerController
 {
 	GENERATED_BODY()
-	
 };
